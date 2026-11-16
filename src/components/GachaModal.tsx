@@ -8,15 +8,37 @@ import { playClickSound, playGold5StarChime } from '../utils/soundEffects';
 interface GachaModalProps {
   isOpen: boolean;
   onClose: () => void;
+  volume: number;
+  onVolumeChange?: (vol: number) => void;
+  isMuted: boolean;
+  onToggleMute?: () => void;
 }
 
 type GachaPhase = 'video' | 'reveal';
 
-export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
+export const GachaModal: React.FC<GachaModalProps> = ({
+  isOpen,
+  onClose,
+  volume,
+  onVolumeChange,
+  isMuted,
+  onToggleMute,
+}) => {
   const [phase, setPhase] = useState<GachaPhase>('video');
   const [selectedGame, setSelectedGame] = useState<GameItem>(GACHA_CONFIG.games[0]);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const effectiveMuted = isMuted || isVideoMuted;
+  const targetVolume = Math.max(0, Math.min(1, volume));
+
+  // Sincronizar el volumen del video del gacha con la barra de sonido
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = targetVolume;
+      videoRef.current.muted = effectiveMuted;
+    }
+  }, [targetVolume, effectiveMuted]);
 
   // Lanza el confetti dorado S-Rank de New Eridu
   const triggerConfetti = useCallback(() => {
@@ -80,10 +102,12 @@ export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
 
     setPhase('video');
 
-    // Reproducir video ZZZ
+    // Reproducir video ZZZ con el volumen sincronizado de la música
     setTimeout(() => {
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
+        videoRef.current.volume = targetVolume;
+        videoRef.current.muted = effectiveMuted;
         videoRef.current.play().catch(() => {
           // Si el navegador bloquea autoplay con sonido, mutear y reproducir
           if (videoRef.current) {
@@ -94,7 +118,7 @@ export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
         });
       }
     }, 150);
-  }, []);
+  }, [targetVolume, effectiveMuted]);
 
   // Al abrir el modal
   useEffect(() => {
@@ -120,9 +144,14 @@ export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
 
   const toggleVideoMute = () => {
     playClickSound();
-    if (videoRef.current) {
-      videoRef.current.muted = !isVideoMuted;
-      setIsVideoMuted(!isVideoMuted);
+    if (onToggleMute) {
+      onToggleMute();
+      if (isVideoMuted) setIsVideoMuted(false);
+    } else {
+      if (videoRef.current) {
+        videoRef.current.muted = !isVideoMuted;
+        setIsVideoMuted(!isVideoMuted);
+      }
     }
   };
 
@@ -143,34 +172,51 @@ export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
         {/* 1. FASE DE VIDEO: PULL ANIMATION OFICIAL DE ZENLESS ZONE ZERO */}
         {phase === 'video' && (
           <div className="relative z-10 w-full max-w-4xl flex flex-col items-center">
-            {/* Controles de Video */}
-            <div className="w-full flex items-center justify-end mb-3 px-2 text-xs font-mono">
-              <div className="flex items-center gap-2">
+            {/* Controles de Video con volumen sincronizado a la barra de música */}
+            <div className="w-full flex items-center justify-between mb-3 px-2 text-xs font-mono gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/70 border border-yellow-400/30 backdrop-blur-md">
                 <button
                   onClick={toggleVideoMute}
-                  className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-mono transition-colors flex items-center gap-1 cursor-pointer"
-                  title={isVideoMuted ? 'Activar sonido' : 'Mutear sonido'}
+                  className="text-slate-300 hover:text-yellow-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  title={effectiveMuted ? 'Activar sonido' : 'Mutear sonido'}
                 >
-                  {isVideoMuted ? (
-                    <>
-                      <VolumeX className="w-3.5 h-3.5 text-red-400" />
-                      <span className="hidden sm:inline">MUTED</span>
-                    </>
+                  {effectiveMuted ? (
+                    <VolumeX className="w-4 h-4 text-red-400" />
                   ) : (
-                    <>
-                      <Volume2 className="w-3.5 h-3.5 text-yellow-400" />
-                      <span className="hidden sm:inline">AUDIO ON</span>
-                    </>
+                    <Volume2 className="w-4 h-4 text-yellow-400" />
                   )}
                 </button>
 
-                <button
-                  onClick={handleSkip}
-                  className="px-4 py-1.5 rounded zzz-cut bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-bold font-hud tracking-wider transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-yellow-400/30"
-                >
-                  <span>SALTAR</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.02"
+                    value={effectiveMuted ? 0 : volume}
+                    onChange={(e) => {
+                      const newVol = parseFloat(e.target.value);
+                      onVolumeChange?.(newVol);
+                      if (effectiveMuted && onToggleMute) {
+                        onToggleMute();
+                      }
+                      if (isVideoMuted) setIsVideoMuted(false);
+                    }}
+                    className="w-20 sm:w-28 h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-yellow-400 hover:accent-yellow-300"
+                    title={`Volumen: ${effectiveMuted ? '0%' : Math.round(volume * 100) + '%'}`}
+                  />
+                  <span className="text-[10px] font-mono text-slate-300 w-7 text-right">
+                    {effectiveMuted ? '0%' : `${Math.round(volume * 100)}%`}
+                  </span>
+                </div>
               </div>
+
+              <button
+                onClick={handleSkip}
+                className="px-4 py-1.5 rounded zzz-cut bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-bold font-hud tracking-wider transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-yellow-400/30 shrink-0"
+              >
+                <span>SALTAR</span>
+              </button>
             </div>
 
             {/* Marco de Pantalla CRT con el Video Oficial ZZZ */}
@@ -189,6 +235,17 @@ export const GachaModal: React.FC<GachaModalProps> = ({ isOpen, onClose }) => {
                 ref={videoRef}
                 src="/videos/video_project_5.mp4"
                 playsInline
+                onLoadedMetadata={() => {
+                  if (videoRef.current) {
+                    videoRef.current.volume = targetVolume;
+                    videoRef.current.muted = effectiveMuted;
+                  }
+                }}
+                onPlay={() => {
+                  if (videoRef.current) {
+                    videoRef.current.volume = targetVolume;
+                  }
+                }}
                 onTimeUpdate={handleTimeUpdate}
                 onEnded={triggerReveal}
                 className="w-full h-full object-cover object-center"

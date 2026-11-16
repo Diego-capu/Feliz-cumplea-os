@@ -6,6 +6,10 @@ interface AudioPlayerProps {
   isPlaying: boolean;
   onTogglePlay: () => void;
   onPlaybackStateChange?: (playing: boolean) => void;
+  volume: number;
+  onVolumeChange: (volume: number) => void;
+  isMuted: boolean;
+  onToggleMute: () => void;
 }
 
 const PLAYLIST = [
@@ -23,21 +27,24 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   isPlaying,
   onTogglePlay,
   onPlaybackStateChange,
+  volume,
+  onVolumeChange,
+  isMuted,
+  onToggleMute,
 }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.2); // Volumen por defecto al 20%
 
   const currentSong = PLAYLIST[currentTrackIndex];
 
-  // Configurar volumen al 20% por defecto e intentar reproducir automáticamente
+  // Configurar volumen e intentar reproducir automáticamente
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Fijar volumen al 20%
-    audio.volume = 0.2;
+    // Fijar volumen según el estado inicial
+    audio.volume = isMuted ? 0 : volume;
+    audio.muted = isMuted;
 
     // Intento 1: Reproducción directa
     const tryAutoplay = () => {
@@ -99,25 +106,25 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }
   }, [currentTrackIndex]);
 
-  // Sincronizar cambios de volumen
-  const handleVolumeChange = (newVol: number) => {
-    setVolume(newVol);
+  // Sincronizar cambios de volumen y mute con el elemento audio
+  useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = newVol;
-      if (newVol > 0 && isMuted) {
-        audioRef.current.muted = false;
-        setIsMuted(false);
-      }
+      audioRef.current.volume = volume;
+      audioRef.current.muted = isMuted;
+    }
+  }, [volume, isMuted]);
+
+  // Manejar cambios en la barra de volumen
+  const handleVolumeChange = (newVol: number) => {
+    onVolumeChange(newVol);
+    if (newVol > 0 && isMuted) {
+      onToggleMute();
     }
   };
 
   const toggleMute = () => {
     playClickSound();
-    if (audioRef.current) {
-      const nextMuted = !isMuted;
-      audioRef.current.muted = nextMuted;
-      setIsMuted(nextMuted);
-    }
+    onToggleMute();
   };
 
   // Icono dinámico según el volumen actual

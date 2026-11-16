@@ -11,6 +11,8 @@ export function App(): React.JSX.Element {
   const [isGachaOpen, setIsGachaOpen] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [wasMusicPlayingBeforeGacha, setWasMusicPlayingBeforeGacha] = useState(true);
+  const [volume, setVolume] = useState(0.2); // 20% por defecto
+  const [isMuted, setIsMuted] = useState(false);
 
   const handleOpenGacha = () => {
     setWasMusicPlayingBeforeGacha(isMusicPlaying);
@@ -45,10 +47,14 @@ export function App(): React.JSX.Element {
       {/* Terminal Footer de New Eridu */}
       <Footer />
 
-      {/* Interactive Gacha Modal (Cinemática del video Untitled.mp4) */}
+      {/* Interactive Gacha Modal (Cinemática del video ZZZ con volumen sincronizado) */}
       <GachaModal
         isOpen={isGachaOpen}
         onClose={handleCloseGacha}
+        volume={volume}
+        onVolumeChange={setVolume}
+        isMuted={isMuted}
+        onToggleMute={() => setIsMuted((prev) => !prev)}
       />
 
       {/* Floating Audio Player de Random Play con Tu Cumpleaños de Diomedes Díaz */}
@@ -56,6 +62,10 @@ export function App(): React.JSX.Element {
         isPlaying={isMusicPlaying}
         onTogglePlay={() => setIsMusicPlaying((prev) => !prev)}
         onPlaybackStateChange={setIsMusicPlaying}
+        volume={volume}
+        onVolumeChange={setVolume}
+        isMuted={isMuted}
+        onToggleMute={() => setIsMuted((prev) => !prev)}
       />
     </div>
   );
