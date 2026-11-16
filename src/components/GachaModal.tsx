@@ -25,7 +25,9 @@ export const GachaModal: React.FC<GachaModalProps> = ({
   onToggleMute,
 }) => {
   const [phase, setPhase] = useState<GachaPhase>('video');
-  const [selectedGame, setSelectedGame] = useState<GameItem>(GACHA_CONFIG.games[0]);
+  // Solo los juegos con probabilidad > 0% participan en la ruleta del gacha
+  const pullableGames = GACHA_CONFIG.games.filter((g) => g.isGachaPullable !== false);
+  const [selectedGame, setSelectedGame] = useState<GameItem>(pullableGames[0] || GACHA_CONFIG.games[0]);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -91,14 +93,16 @@ export const GachaModal: React.FC<GachaModalProps> = ({
 
   // Iniciar tirada y reproducir el video oficial de ZZZ
   const startPull = useCallback(() => {
-    // Determinar juego ganador
+    // Filtrar juegos elegibles para el gacha (probabilidad > 0%, excluyendo RDR2)
+    const eligibleGames = GACHA_CONFIG.games.filter((g) => g.isGachaPullable !== false);
+
     let winnerIndex = 0;
     if (GACHA_CONFIG.forcedWinnerIndex !== null) {
-      winnerIndex = GACHA_CONFIG.forcedWinnerIndex % GACHA_CONFIG.games.length;
+      winnerIndex = GACHA_CONFIG.forcedWinnerIndex % eligibleGames.length;
     } else {
-      winnerIndex = Math.floor(Math.random() * GACHA_CONFIG.games.length);
+      winnerIndex = Math.floor(Math.random() * eligibleGames.length);
     }
-    setSelectedGame(GACHA_CONFIG.games[winnerIndex]);
+    setSelectedGame(eligibleGames[winnerIndex]);
 
     setPhase('video');
 

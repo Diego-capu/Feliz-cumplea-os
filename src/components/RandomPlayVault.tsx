@@ -42,10 +42,10 @@ export const RandomPlayVault: React.FC = () => {
       {/* Header Sección */}
       <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12">
         <h2 className="text-3xl sm:text-5xl font-extrabold text-white font-hud tracking-wide mb-3">
-          Las 3 Cintas Candidatas al Regalo
+          Las Cintas Candidatas al Regalo
         </h2>
         <p className="text-slate-300 text-sm sm:text-base font-light">
-          Belle ha seleccionado tres de las mejores obras de los videojuegos. Desliza o gira los discos para explorar cada título candidato.
+          Belle ha seleccionado los títulos candidatos de la colección. Desliza o gira los discos para explorar cada entrega.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export const RandomPlayVault: React.FC = () => {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-300 italic">
-            "¡Ey {GACHA_CONFIG.friendName}! Estos tres juegos son joyas absolutas. Cualquiera que te toque en la sintonización dorada te va a dar cientos de horas de vicio."
+            "¡Ey {GACHA_CONFIG.friendName}! Estos juegos son joyas absolutas. Cualquiera que te toque en la sintonización dorada te va a dar cientos de horas de vicio."
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export const RandomPlayVault: React.FC = () => {
             </span>
           </div>
           <span className="text-xs font-mono text-amber-300">
-            JUEGO {activeIndex + 1} DE 3
+            JUEGO {activeIndex + 1} DE {GACHA_CONFIG.games.length}
           </span>
         </div>
 

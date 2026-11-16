@@ -12,6 +12,7 @@ export interface GameItem {
   discPalette: [string, string, string];
   coverImage: string;
   steamUrl: string;
+  isGachaPullable?: boolean; // false = 0% de probabilidad en el gacha
 }
 
 export interface GachaConfig {
@@ -95,6 +96,22 @@ export const GACHA_CONFIG: GachaConfig = {
       discPalette: ['#06b6d4', '#0891b2', '#0f172a'],
       coverImage: '/images/games/mouthwashing.jpg',
       steamUrl: 'https://store.steampowered.com/app/2475490/Mouthwashing/',
+    },
+    {
+      id: 'rdr2',
+      title: 'Red Dead Redemption 2',
+      tag: 'Mundo Abierto / Historia / Western / Acción',
+      rarity: 'S-RANK',
+      developer: 'Rockstar Games',
+      releaseYear: '2019',
+      quote: 'We are more ghosts than people, Arthur. Una obra maestra legendaria en el salvaje oeste.',
+      description: 'Ganador de más de 175 premios al Juego del Año. La épica travesía de Arthur Morgan y la banda de Van der Linde por el corazón de América.',
+      primaryColor: '#dc2626',
+      secondaryColor: '#7f1d1d',
+      discPalette: ['#dc2626', '#991b1b', '#18181b'],
+      coverImage: '/images/games/rdr2.jpg',
+      steamUrl: 'https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/',
+      isGachaPullable: false, // Probabilidad 0% en la ruleta del gacha
     },
   ],
   belle: {
