@@ -1,0 +1,170 @@
+@font-face {
+  font-family: 'HelvetiHand';
+  src: url('/fonts/HelvetiHand.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: "Outfit", sans-serif;
+  --font-sans: "Outfit", sans-serif;
+  --font-mono: "Rajdhani", monospace;
+  --font-hand: "HelvetiHand", cursive, sans-serif;
+  --color-canvas: #090b0e;
+  --color-canvas-subtle: #12161f;
+  --color-ink: #f8fafc;
+  --color-ink-muted: #94a3b8;
+  --color-zzz-yellow: #facc15;
+  --color-zzz-gold: #f59e0b;
+  --color-zzz-cyan: #00f0ff;
+  --color-zzz-red: #ff3344;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #090b0e;
+  color: #f8fafc;
+  overflow-x: hidden;
+}
+
+.font-hud {
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.font-hand {
+  font-family: 'HelvetiHand', "Caveat", cursive, sans-serif;
+}
+
+@layer utilities {
+  /* ZZZ Iconic Hazard Warning Tape (Black & Neon Yellow stripes) */
+  .hazard-tape {
+    background: repeating-linear-gradient(
+      -45deg,
+      #facc15,
+      #facc15 12px,
+      #111111 12px,
+      #111111 24px
+    );
+  }
+
+  /* ZZZ Chamfered Cut-Corner Buttons */
+  .zzz-cut {
+    clip-path: polygon(
+      12px 0,
+      100% 0,
+      100% calc(100% - 12px),
+      calc(100% - 12px) 100%,
+      0 100%,
+      0 12px
+    );
+  }
+
+  .zzz-cut-lg {
+    clip-path: polygon(
+      18px 0,
+      100% 0,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      0 100%,
+      0 18px
+    );
+  }
+
+  /* Frosted liquid glass card */
+  .liquid-glass {
+    background: rgba(14, 18, 25, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 15px 35px -5px rgba(0, 0, 0, 0.6),
+      0 4px 12px -2px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .liquid-glass-gold {
+    background: rgba(24, 18, 8, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    box-shadow: 
+      0 0 35px -5px rgba(245, 158, 11, 0.3),
+      inset 0 1px 0 rgba(253, 224, 71, 0.3);
+  }
+
+  .liquid-pill {
+    background: rgba(15, 20, 28, 0.9);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    box-shadow: 
+      0 10px 25px -4px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Scanline CRT texture overlay */
+  .scanline-bg {
+    background: linear-gradient(
+      rgba(18, 16, 16, 0) 50%, 
+      rgba(0, 0, 0, 0.35) 50%
+    ), linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.04),
+      rgba(0, 255, 0, 0.02),
+      rgba(0, 0, 255, 0.04)
+    );
+    background-size: 100% 4px, 6px 100%;
+  }
+
+  /* 5-star golden shimmer pulse */
+  .glow-gold-pulse {
+    box-shadow: 0 0 25px rgba(250, 204, 21, 0.7), inset 0 0 15px rgba(253, 224, 71, 0.5);
+    animation: goldPulse 1.8s infinite alternate ease-in-out;
+  }
+
+  .glow-cyan-pulse {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+    animation: cyanPulse 2.2s infinite alternate ease-in-out;
+  }
+}
+
+@keyframes goldPulse {
+  0% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.5), inset 0 0 10px rgba(253, 224, 71, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.9), inset 0 0 25px rgba(253, 224, 71, 0.7);
+  }
+}
+
+@keyframes cyanPulse {
+  0% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.85);
+  }
+}
+
+/* Custom Gacha Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #090b0e;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(250, 204, 21, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(250, 204, 21, 0.85);
+}
