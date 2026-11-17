@@ -12,7 +12,8 @@ export interface GameItem {
   discPalette: [string, string, string];
   coverImage: string;
   steamUrl: string;
-  isGachaPullable?: boolean; // false = 0% de probabilidad en el gacha
+  isGachaPullable?: boolean; // false = excluido del gacha
+  dropRatePercent: number; // Probabilidad de obtención en porcentaje (%)
 }
 
 export interface GachaConfig {
@@ -23,7 +24,8 @@ export interface GachaConfig {
   masterTapes: number;
   polychromes: number;
   crew: string[];
-  // Si es null, elige al azar entre los 3. Si pones 0, 1 o 2, fuerza ese juego siempre como ganador.
+  // Si es null, usa las probabilidades (33% Megabonk, 33% Dungeon Rampage, 33% Mouthwashing, 1% RDR2).
+  // Si pones 0, 1, 2 o 3, fuerza ese juego siempre como ganador.
   forcedWinnerIndex: number | null;
   games: GameItem[];
   belle: {
@@ -66,6 +68,8 @@ export const GACHA_CONFIG: GachaConfig = {
       discPalette: ['#ec4899', '#be185d', '#18181b'],
       coverImage: '/images/games/megabonk.jpg',
       steamUrl: 'https://store.steampowered.com/app/3405340/Megabonk/',
+      isGachaPullable: true,
+      dropRatePercent: 33, // 33% de probabilidad
     },
     {
       id: 'dungeon-rampage',
@@ -81,6 +85,8 @@ export const GACHA_CONFIG: GachaConfig = {
       discPalette: ['#eab308', '#ca8a04', '#1c1917'],
       coverImage: '/images/games/dungeon_rampage.jpg',
       steamUrl: 'https://store.steampowered.com/app/3053950/Dungeon_Rampage_Remastered/',
+      isGachaPullable: true,
+      dropRatePercent: 33, // 33% de probabilidad
     },
     {
       id: 'mouthwashing',
@@ -96,6 +102,8 @@ export const GACHA_CONFIG: GachaConfig = {
       discPalette: ['#06b6d4', '#0891b2', '#0f172a'],
       coverImage: '/images/games/mouthwashing.jpg',
       steamUrl: 'https://store.steampowered.com/app/2475490/Mouthwashing/',
+      isGachaPullable: true,
+      dropRatePercent: 33, // 33% de probabilidad
     },
     {
       id: 'rdr2',
@@ -111,7 +119,8 @@ export const GACHA_CONFIG: GachaConfig = {
       discPalette: ['#dc2626', '#991b1b', '#18181b'],
       coverImage: '/images/games/rdr2.jpg',
       steamUrl: 'https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/',
-      isGachaPullable: false, // Probabilidad 0% en la ruleta del gacha
+      isGachaPullable: true,
+      dropRatePercent: 1, // 1% de probabilidad jackpot ultra raro
     },
   ],
   belle: {

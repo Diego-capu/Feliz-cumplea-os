@@ -93,16 +93,33 @@ export const GachaModal: React.FC<GachaModalProps> = ({
 
   // Iniciar tirada y reproducir el video oficial de ZZZ
   const startPull = useCallback(() => {
-    // Filtrar juegos elegibles para el gacha (probabilidad > 0%, excluyendo RDR2)
-    const eligibleGames = GACHA_CONFIG.games.filter((g) => g.isGachaPullable !== false);
+    // Filtrar juegos elegibles para el gacha con probabilidad mayor a 0
+    const eligibleGames = GACHA_CONFIG.games.filter(
+      (g) => g.isGachaPullable !== false && g.dropRatePercent > 0
+    );
 
-    let winnerIndex = 0;
+    let winner: GameItem;
     if (GACHA_CONFIG.forcedWinnerIndex !== null) {
-      winnerIndex = GACHA_CONFIG.forcedWinnerIndex % eligibleGames.length;
+      const winnerIndex = GACHA_CONFIG.forcedWinnerIndex % GACHA_CONFIG.games.length;
+      winner = GACHA_CONFIG.games[winnerIndex];
     } else {
-      winnerIndex = Math.floor(Math.random() * eligibleGames.length);
+      // Selección ponderada por dropRatePercent (Megabonk 33%, Dungeon 33%, Mouthwashing 33%, RDR2 1%)
+      const totalWeight = eligibleGames.reduce((acc, g) => acc + g.dropRatePercent, 0);
+      const roll = Math.random() * totalWeight;
+
+      let accumulated = 0;
+      let selected = eligibleGames[0];
+      for (const game of eligibleGames) {
+        accumulated += game.dropRatePercent;
+        if (roll < accumulated) {
+          selected = game;
+          break;
+        }
+      }
+      winner = selected;
     }
-    setSelectedGame(eligibleGames[winnerIndex]);
+
+    setSelectedGame(winner);
 
     setPhase('video');
 
